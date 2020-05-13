@@ -1,0 +1,194 @@
+<?php
+  include("check_session.php");
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Admin</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Page level plugin CSS-->
+  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+    <a class="navbar-brand mr-1" data-toggle="tooltip" title="Tip: Create courier before create new item" href="#">Menu</a>
+
+    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+      <i class="fas fa-bars"></i>
+    </button>
+
+  </nav>
+
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="sidebar navbar-nav">
+        <ul class="navbar-nav ml-auto ml-md-0">
+
+          <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-user-circle fa-fw"></i>
+              <span><?php
+                $con = mysqli_connect("localhost","root","","mail");
+                // //Check connection
+                if(mysqli_connect_errno($con)) {
+                  echo "Fail to connect to MySQL:" . mysqli_connect_error($con);
+                }
+                $user = "SELECT Username FROM user WHERE UserID=1";
+                $query = mysqli_query($con,$user);
+                while ($row = mysqli_fetch_array($query)) {
+                  echo $row['Username'];
+                }
+                mysqli_close($con);
+                ?></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+              <a class="dropdown-item" href="item.php">New Item</a>
+              <a class="dropdown-item" href="management.php">Courier Management</a>
+              <a class="dropdown-item" href="pickup.php">Pickup Date</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+            </div>
+          </li>
+        </ul>
+    </ul>
+
+    <div style="background-color: grey" id="content-wrapper">
+      <center>
+      <span class="blinking"><p><font size="20">Tip: Create courier before create new item</font></p></span>
+      </center>
+      <div class="container-fluid">
+
+        <!-- DataTables Example -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            <a data-toggle="tooltip" title="Tip: Create courier before create new item">Mail</a></div>
+          <div style="background-color: grey" class="card-body">
+            <div class="table-responsive">
+              <?php
+              	$con = mysqli_connect("localhost","root","","mail");
+              	// //Check connection
+              	if(mysqli_connect_errno($con)) {
+              		echo "Fail to connect to MySQL:" . mysqli_connect_error($con);
+              	}
+                $name = "SELECT shipment.Recipient,shipment.TrackingNumber,shipment.Type,courier.Name as Courier,shipment.ArrivalDate
+                         FROM shipment
+                         JOIN courier
+                         ON shipment.CourierID=courier.CourierID";
+              	$search = mysqli_query($con,$name);
+              	if (!$search) {
+              		echo "No such data!";
+              	} else {
+                ?>
+                  <table class='table table-hover table-dark table-bordered' id='dataTable' width='100%' cellspacing='0'>
+                  <thead>
+                  <tr>
+                  <th>Name</th>
+                  <th>Tracking Number</th>
+                  <th>Type</th>
+                  <th>Courier</th>
+                  <th>Arrival Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <?php
+                while($row = mysqli_fetch_array($search)) {
+                ?>
+            		  <tr>
+                  <td><?php echo $row["Recipient"]?></td>
+            		  <td><? echo $row["TrackingNumber"]?></td>
+            		  <td><? echo $row["Type"]?></td>
+                  <td><? echo $row["Courier"]?></td>
+            		  <td><? echo $row["ArrivalDate"]?></td>
+                  </tr>
+              <?php
+                    }
+            	}
+              ?>
+                  </tbody>
+              </table>
+              <?php
+              mysqli_close($con);
+              ?>
+            </div>
+          </div>
+      </div>
+      <!-- /.container-fluid -->
+
+      <!-- Sticky Footer -->
+      <footer class="sticky-footer">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright © Bootstrap Website 2019</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Are you sure you want to log out?</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="session_destroy.php">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Page level plugin JavaScript-->
+  <script src="vendor/datatables/jquery.dataTables.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin.min.js"></script>
+
+  <!-- Demo scripts for this page-->
+  <script src="js/demo/datatables-demo.js"></script>
+
+</body>
+
+</html>
